@@ -423,9 +423,10 @@ stamps/stamp-configure-shared-debug: stamps/stamp-patch
 define __post_configure
 	egrep \
 	  "^#($$(awk -v ORS='|' '$$2 ~ /^extension$$/ {print $$1}' debian/PVER-minimal.README.Debian.in)XX)" \
-	  Modules/Setup.dist \
-	    | sed -e 's/^#//' -e 's/-Wl,-Bdynamic//;s/-Wl,-Bstatic//' \
-	    >> $(1)/Modules/Setup.local
+	  Modules/Setup.dist 
+#\
+#	    | sed -e 's/^#//' -e 's/-Wl,-Bdynamic//;s/-Wl,-Bstatic//' \
+#	    >> $(1)/Modules/Setup.local
 
 	: # unconditionally run makesetup
 	cd $(1) && \
