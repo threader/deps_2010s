@@ -16,7 +16,7 @@ Lib
 Mac
 Makefile.pre.in
 Misc
-Modules
+#Modules
 Objects
 PC
 PCbuild
