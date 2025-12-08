@@ -845,7 +845,7 @@ endif
 	rm -f $(d)/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig/python2.pc
 	rm -f $(d)/usr/bin/python2{,-config}
 	rm -f $(d)/usr/share/man/man1/python2.1
-	rm -f $(d)/usr/share/man/man1/python22{,-config}.1
+	rm -f $(d)/usr/share/man/man1/python2{,-config}.1
 	rm -f $(d)/$(scriptdir)/lib2to3/*.pickle
 
 	if [ -d $(d)/$(scriptdir)/ensurepip/_bundled ]; then \
@@ -1428,7 +1428,7 @@ stamps/stamp-patch: $(patchdir)/series
 #	dh_testdir
 	uname -a
 	@echo USER=$$USER, LOGNAME=$$LOGNAME
-#	QUILT_PATCHES=$(patchdir) quilt push -a || test $$? = 2
+	QUILT_PATCHES=$(patchdir) quilt push -a || test $$? = 2
 	rm -rf autom4te.cache configure
 	autoconf
 	mkdir -p stamps
@@ -1458,7 +1458,7 @@ stamps/stamp-patch: $(patchdir)/series
 
 reverse-patches: unpatch
 unpatch:
-	# QUILT_PATCHES=$(patchdir) quilt pop -a -R || test $$? = 2
+	QUILT_PATCHES=$(patchdir) quilt pop -a -R || test $$? = 2
 	rm -f stamps/stamp-patch $(patchdir)/series
 	rm -rf configure autom4te.cache
 	rm -f Lib/dist-packages
