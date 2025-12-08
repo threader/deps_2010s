@@ -15,6 +15,7 @@ import os
 import re
 import string
 import sys
+import fnmatch
 
 from distutils.errors import DistutilsPlatformError
 
@@ -79,8 +80,6 @@ def get_python_inc(plat_specific=0, prefix=None):
     If 'prefix' is supplied, use it instead of sys.prefix or
     sys.exec_prefix -- i.e., ignore 'plat_specific'.
     """
-    if prefix is None:
-        prefix = plat_specific and EXEC_PREFIX or PREFIX
 
     if os.name == "posix":
         if python_build:
@@ -100,7 +99,14 @@ def get_python_inc(plat_specific=0, prefix=None):
                 # Include is located in the srcdir
                 inc_dir = os.path.join(srcdir, "Include")
             return inc_dir
-        return os.path.join(prefix, "include", "python" + get_python_version())
+        else:
+            if not (prefix is None):
+                return os.path.join(prefix, "include",
+                                    "python" + get_python_version())+(sys.pydebug and "_d" or "")
+            if plat_specific:
+                return get_config_var('CONFINCLUDEPY')
+            else:
+                return get_config_var('INCLUDEPY')
     elif os.name == "nt":
         return os.path.join(prefix, "include")
     elif os.name == "os2":
@@ -125,6 +131,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
     If 'prefix' is supplied, use it instead of sys.prefix or
     sys.exec_prefix -- i.e., ignore 'plat_specific'.
     """
+    is_default_prefix = not prefix or os.path.normpath(prefix) in ('/usr', '/usr/local')
     if prefix is None:
         prefix = plat_specific and EXEC_PREFIX or PREFIX
 
@@ -133,6 +140,8 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
                                  "lib", "python" + get_python_version())
         if standard_lib:
             return libpython
+        elif is_default_prefix and 'PYTHONUSERBASE' not in os.environ and 'real_prefix' not in sys.__dict__:
+            return os.path.join(libpython, "dist-packages")
         else:
             return os.path.join(libpython, "site-packages")
 
@@ -181,10 +190,12 @@ def customize_compiler(compiler):
                 _osx_support.customize_compiler(_config_vars)
                 _config_vars['CUSTOMIZED_OSX_COMPILER'] = 'True'
 
-        (cc, cxx, cflags, ccshared, ldshared, so_ext, ar, ar_flags) = \
-            get_config_vars('CC', 'CXX', 'CFLAGS',
-                            'CCSHARED', 'LDSHARED', 'SO', 'AR',
-                            'ARFLAGS')
+        (cc, cxx, cflags, extra_cflags, basecflags,
+         ccshared, ldshared, so_ext, ar, ar_flags,
+         configure_cppflags, configure_cflags, configure_ldflags) = \
+            get_config_vars('CC', 'CXX', 'CFLAGS', 'EXTRA_CFLAGS', 'BASECFLAGS',
+                            'CCSHARED', 'LDSHARED', 'SO', 'AR', 'ARFLAGS',
+                            'CONFIGURE_CPPFLAGS', 'CONFIGURE_CFLAGS', 'CONFIGURE_LDFLAGS')
 
         if 'CC' in os.environ:
             newcc = os.environ['CC']
@@ -197,6 +208,10 @@ def customize_compiler(compiler):
             cc = newcc
         if 'CXX' in os.environ:
             cxx = os.environ['CXX']
+        if fnmatch.filter([cc, cxx], '*-4.[0-8]'):
+            configure_cflags = configure_cflags.replace('-fstack-protector-strong', '-fstack-protector')
+            ldshared = ldshared.replace('-fstack-protector-strong', '-fstack-protector')
+            cflags = cflags.replace('-fstack-protector-strong', '-fstack-protector')
         if 'LDSHARED' in os.environ:
             ldshared = os.environ['LDSHARED']
         if 'CPP' in os.environ:
@@ -205,13 +220,24 @@ def customize_compiler(compiler):
             cpp = cc + " -E"           # not always
         if 'LDFLAGS' in os.environ:
             ldshared = ldshared + ' ' + os.environ['LDFLAGS']
+        elif configure_ldflags:
+            ldshared = ldshared + ' ' + configure_ldflags
+        if 'BASECFLAGS' in os.environ:
+            basecflags = os.environ['BASECFLAGS']
         if 'CFLAGS' in os.environ:
-            cflags = cflags + ' ' + os.environ['CFLAGS']
+            cflags = ' '.join(str(x) for x in (basecflags, os.environ['CFLAGS'], extra_cflags) if x)
             ldshared = ldshared + ' ' + os.environ['CFLAGS']
+        elif configure_cflags:
+            cflags = ' '.join(str(x) for x in (basecflags, configure_cflags, extra_cflags) if x)
+            ldshared = ldshared + ' ' + configure_cflags
         if 'CPPFLAGS' in os.environ:
             cpp = cpp + ' ' + os.environ['CPPFLAGS']
             cflags = cflags + ' ' + os.environ['CPPFLAGS']
             ldshared = ldshared + ' ' + os.environ['CPPFLAGS']
+        elif configure_cppflags:
+            cpp = cpp + ' ' + configure_cppflags
+            cflags = cflags + ' ' + configure_cppflags
+            ldshared = ldshared + ' ' + configure_cppflags
         if 'AR' in os.environ:
             ar = os.environ['AR']
         if 'ARFLAGS' in os.environ:
@@ -225,7 +251,7 @@ def customize_compiler(compiler):
             compiler=cc_cmd,
             compiler_so=cc_cmd + ' ' + ccshared,
             compiler_cxx=cxx,
-            linker_so=ldshared,
+            linker_so=ldshared + ' ' + ccshared,
             linker_exe=cc,
             archiver=archiver)
 
@@ -254,7 +280,7 @@ def get_makefile_filename():
     if python_build:
         return os.path.join(project_base, "Makefile")
     lib_dir = get_python_lib(plat_specific=1, standard_lib=1)
-    return os.path.join(lib_dir, "config", "Makefile")
+    return os.path.join(get_config_var('LIBPL'), "Makefile")
 
 
 def parse_config_h(fp, g=None):
