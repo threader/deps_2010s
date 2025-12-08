@@ -17,7 +17,7 @@ Index: b/Makefile.pre.in
  
  # Build the interpreter
  $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
--		$(LINKCC) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
+-		$(LINKCC) $(PY_LDFLAGS) $(LINKFORSHARED) -o $@ \
 +		$(LINKCC) $(PY_LDFLAGS) $(PY_CFLAGS) $(LINKFORSHARED) -o $@ \
  			Modules/python.o \
  			-Wl,--whole-archive $(BLDLIBRARY) -Wl,--no-whole-archive $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
