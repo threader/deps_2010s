@@ -13,7 +13,7 @@ Index: b/Makefile.pre.in
  LDCXXSHARED=	@LDCXXSHARED@
  DESTSHARED=	$(BINLIBDEST)/lib-dynload
  
-@@ -495,7 +495,7 @@ coverage-report: regen-grammar
+@@ -492,7 +492,7 @@ coverage-report: regen-grammar
  
  # Build the interpreter
  $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)

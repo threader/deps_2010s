@@ -1,6 +1,6 @@
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -1196,6 +1196,8 @@ python2-config: $(srcdir)/Misc/python-con
+@@ -1190,6 +1190,8 @@ python2-config: $(srcdir)/Misc/python-con
  	# Substitution happens here, as the completely-expanded BINDIR
  	# is not available in configure
  	sed -e "s,@EXENAME@,$(BINDIR)/python$(VERSION)$(EXE)," < $(srcdir)/Misc/python2-config.in >python2-config
@@ -9,7 +9,7 @@
  
  # Install the include files
  INCLDIRSTOMAKE=$(INCLUDEDIR) $(CONFINCLUDEDIR) $(INCLUDEPY) $(CONFINCLUDEPY)
-@@ -1255,6 +1257,7 @@ libainstall:	@DEF_MAKE_RULE@ python-conf
+@@ -1249,6 +1251,7 @@ libainstall:	@DEF_MAKE_RULE@ python-conf
  	$(INSTALL_SCRIPT) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
  	$(INSTALL_SCRIPT) python2-config $(DESTDIR)$(BINDIR)/python$(VERSION)-config
  	rm python2-config
@@ -139,7 +139,7 @@
 +done
 --- a/configure.ac
 +++ b/configure.ac
-@@ -915,6 +915,7 @@ fi
+@@ -916,6 +916,7 @@ fi
  
  # Other platforms follow
  if test $enable_shared = "yes"; then
@@ -147,7 +147,7 @@
    AC_DEFINE(Py_ENABLE_SHARED, 1, [Defined if Python is built as a shared library.])
    case $ac_sys_system in
      BeOS*)
-@@ -975,6 +976,7 @@ if test $enable_shared = "yes"; then
+@@ -976,6 +977,7 @@ if test $enable_shared = "yes"; then
  
    esac
  else # shared is disabled
@@ -155,7 +155,7 @@
    case $ac_sys_system in
      CYGWIN*)
            BLDLIBRARY='$(LIBRARY)'
-@@ -982,6 +984,7 @@ else # shared is disabled
+@@ -983,6 +985,7 @@ else # shared is disabled
            ;;
    esac
  fi
@@ -163,7 +163,7 @@
  
  if test "$cross_compiling" = yes; then
  	RUNSHARED=
-@@ -4959,7 +4962,7 @@ AC_MSG_RESULT($ENSUREPIP)
+@@ -4985,7 +4988,7 @@ AC_MSG_RESULT($ENSUREPIP)
  AC_SUBST(ENSUREPIP)
  
  # generate output files

@@ -1,4 +1,6 @@
-issue9189.diff
+
+# git-updates.diff
+#issue9189.diff
 build-libpython.diff
 deb-setup.diff
 deb-locations.diff
@@ -52,6 +54,7 @@ ctypes-arm.diff
 lto-link-flags.diff
 multiarch.diff
 lib2to3-no-pickled-grammar.diff
+python_exports.diff
 add-python-config-sh.diff
 ext-no-libpython-link.diff
 build-hash.diff
@@ -75,7 +78,7 @@ CVE-2019-20907.diff
 CVE-2020-8492.diff
 CVE-2021-3177.diff
 
-testsuite-fix-with-expat.diff
+#testsuite-fix-with-expat.diff
 CVE-2021-23336.diff
 CVE-2022-0391.diff
 CVE-2022-48560.diff

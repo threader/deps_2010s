@@ -63,7 +63,7 @@
  Python/thread.o: @THREADHEADERS@
  
 +Python/sysmodule.o: $(srcdir)/Python/sysmodule.c Makefile
-+	$(CC) -c $(PY_CORE_CFLAGS) \
++	$(CC) -c $(PY_CORE_CFLAGS)  -I../Include -I../PC \
 +		-DMULTIARCH='"$(MULTIARCH)"' \
 +		-o $@ $(srcdir)/Python/sysmodule.c
 +
