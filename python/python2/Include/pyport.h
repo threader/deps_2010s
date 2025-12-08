@@ -764,16 +764,18 @@ extern int fdatasync(int);
 #       define HAVE_DECLSPEC_DLL
 #endif
 
+#include "exports.h"
+
 /* only get special linkage if built as shared or platform is Cygwin */
 #if defined(Py_ENABLE_SHARED) || defined(__CYGWIN__)
 #       if defined(HAVE_DECLSPEC_DLL)
-#               ifdef Py_BUILD_CORE
+#               if defined(Py_BUILD_CORE) && !defined(Py_BUILD_CORE_MODULE)
 #                       define PyAPI_FUNC(RTYPE) Py_EXPORTED_SYMBOL RTYPE
 #                       define PyAPI_DATA(RTYPE) extern Py_EXPORTED_SYMBOL RTYPE
         /* module init functions inside the core need no external linkage */
         /* except for Cygwin to handle embedding (FIXME: BeOS too?) */
 #                       if defined(__CYGWIN__)
-#                               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL PyObject*
+#                               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL void
 #                       else /* __CYGWIN__ */
 #                               define PyMODINIT_FUNC void
 #                       endif /* __CYGWIN__ */
@@ -789,9 +791,9 @@ extern int fdatasync(int);
 #                       define PyAPI_DATA(RTYPE) extern Py_IMPORTED_SYMBOL RTYPE
         /* module init functions outside the core must be exported */
 #                       if defined(__cplusplus)
-#                               define PyMODINIT_FUNC extern "C" Py_EXPORTED_SYMBOL PyObject*
+#                               define PyMODINIT_FUNC extern "C" Py_EXPORTED_SYMBOL void
 #                       else /* __cplusplus */
-#                               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL PyObject*
+#                               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL void
 #                       endif /* __cplusplus */
 #               endif /* Py_BUILD_CORE */
 #       endif /* HAVE_DECLSPEC */
@@ -806,9 +808,9 @@ extern int fdatasync(int);
 #endif
 #ifndef PyMODINIT_FUNC
 #       if defined(__cplusplus)
-#               define PyMODINIT_FUNC extern "C" Py_EXPORTED_SYMBOL PyObject*
+#               define PyMODINIT_FUNC extern "C" Py_EXPORTED_SYMBOL void
 #       else /* __cplusplus */
-#               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL PyObject*
+#               define PyMODINIT_FUNC Py_EXPORTED_SYMBOL void
 #       endif /* __cplusplus */
 #endif
 
