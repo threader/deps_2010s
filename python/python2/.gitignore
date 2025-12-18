@@ -9,10 +9,10 @@ build-*
 aclocal.m4
 config.guess
 config.sub
-configure.ac
+# configure.ac
 install-sh
-pyconfig.h.in
-setup.py
+# pyconfig.h.in
+# setup.py
 
 debian/.debhelper
 debian/*.debhelper.log
