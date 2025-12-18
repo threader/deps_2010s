@@ -72,18 +72,12 @@ MAKESETUP=      $(srcdir)/Modules/makesetup
 # Compiler options
 OPT=		@OPT@
 BASECFLAGS=	@BASECFLAGS@
-CONFIGURE_CFLAGS=	@CFLAGS@
-CONFIGURE_CPPFLAGS=	@CPPFLAGS@
-CONFIGURE_LDFLAGS=	@LDFLAGS@
-# Avoid assigning CFLAGS, LDFLAGS, etc. so users can use them on the
-# command line to append to these values without stomping the pre-set
-# values.
-PY_CFLAGS=	$(BASECFLAGS) $(OPT) $(CONFIGURE_CFLAGS) $(CFLAGS) $(EXTRA_CFLAGS)
+CFLAGS=		$(BASECFLAGS) @CFLAGS@ $(OPT) $(EXTRA_CFLAGS)
 # Both CPPFLAGS and LDFLAGS need to contain the shell's value for setup.py to
 # be able to build extension modules using the directories specified in the
 # environment variables
-PY_CPPFLAGS=	-I. -IInclude -I$(srcdir)/Include $(CONFIGURE_CPPFLAGS) $(CPPFLAGS)
-PY_LDFLAGS=	$(CONFIGURE_LDFLAGS) $(LDFLAGS)
+CPPFLAGS=	-I. -IInclude -I$(srcdir)/Include @CPPFLAGS@
+LDFLAGS=	@LDFLAGS@
 LDLAST=		@LDLAST@
 SGI_ABI=	@SGI_ABI@
 CCSHARED=	@CCSHARED@
@@ -92,7 +86,7 @@ ARFLAGS=	@ARFLAGS@
 # Extra C flags added for building the interpreter object files.
 CFLAGSFORSHARED=@CFLAGSFORSHARED@
 # C flags used for building the interpreter object files
-PY_CORE_CFLAGS=	$(PY_CFLAGS) $(PY_CPPFLAGS) $(CFLAGSFORSHARED) -DPy_BUILD_CORE
+PY_CFLAGS=	$(CFLAGS) $(CPPFLAGS) $(CFLAGSFORSHARED) -DPy_BUILD_CORE
 
 
 # Machine-dependent subdirectories
@@ -493,7 +487,7 @@ coverage-report: regen-grammar
 
 # Build the interpreter
 $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
-		$(LINKCC) $(PY_LDFLAGS) $(LINKFORSHARED) -o $@ \
+		$(LINKCC) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
 			Modules/python.o \
 			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
 
@@ -518,7 +512,7 @@ pybuilddir.txt: $(BUILDPYTHON)
 
 # This is shared by the math and cmath modules
 Modules/_math.o: Modules/_math.c Modules/_math.h
-	$(CC) -c $(CCSHARED) $(PY_CORE_CFLAGS) -o $@ $<
+	$(CC) -c $(CCSHARED) $(PY_CFLAGS) -o $@ $<
 
 # Build the shared modules
 # Under GNU make, MAKEFLAGS are sorted and normalized; the 's' for
@@ -529,7 +523,7 @@ sharedmods: $(BUILDPYTHON) pybuilddir.txt Modules/_math.o
 	    *\ -s*|s*) quiet="-q";; \
 	    *) quiet="";; \
 	esac; \
-	$(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' LDFLAGS='$(PY_LDFLAGS)' OPT='$(OPT)' \
+	$(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' \
 		_TCLTK_INCLUDES='$(TCLTK_INCLUDES)' _TCLTK_LIBS='$(TCLTK_LIBS)' \
 		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
 
@@ -547,18 +541,18 @@ $(LIBRARY): $(LIBRARY_OBJS)
 
 libpython$(VERSION).so: $(LIBRARY_OBJS)
 	if test $(INSTSONAME) != $(LDLIBRARY); then \
-		$(BLDSHARED) $(PY_LDFLAGS) $(CCSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
+		$(BLDSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
 		$(LN) -f $(INSTSONAME) $@; \
 	else \
-		$(BLDSHARED) $(PY_LDFLAGS) $(CCSHARED) -o $@ $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
+		$(BLDSHARED) -o $@ $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
 	fi
 
 libpython$(VERSION).dylib: $(LIBRARY_OBJS)
-	 $(CC) -dynamiclib -Wl,-single_module $(PY_LDFLAGS) -undefined dynamic_lookup -Wl,-install_name,$(prefix)/lib/libpython$(VERSION).dylib -Wl,-compatibility_version,$(VERSION) -Wl,-current_version,$(VERSION) -o $@ $(LIBRARY_OBJS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
+	 $(CC) -dynamiclib -Wl,-single_module $(LDFLAGS) -undefined dynamic_lookup -Wl,-install_name,$(prefix)/lib/libpython$(VERSION).dylib -Wl,-compatibility_version,$(VERSION) -Wl,-current_version,$(VERSION) -o $@ $(LIBRARY_OBJS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
 
 
 libpython$(VERSION).sl: $(LIBRARY_OBJS)
-	$(LDSHARED) $(PY_LDFLAGS) -o $@ $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST)
+	$(LDSHARED) -o $@ $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST)
 
 # Copy up the gdb python hooks into a position where they can be automatically
 # loaded by gdb during Lib/test/test_gdb.py
@@ -597,7 +591,7 @@ $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK): \
 # for a shared core library; otherwise, this rule is a noop.
 $(DLLLIBRARY) libpython$(VERSION).dll.a: $(LIBRARY_OBJS)
 	if test -n "$(DLLLIBRARY)"; then \
-		$(LDSHARED) $(PY_LDFLAGS) -Wl,--out-implib=$@ -o $(DLLLIBRARY) $^ \
+		$(LDSHARED) -Wl,--out-implib=$@ -o $(DLLLIBRARY) $^ \
 			$(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST); \
 	else true; \
 	fi
@@ -647,14 +641,14 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
 		$(SIGNAL_OBJS) \
 		$(MODOBJS) \
 		$(srcdir)/Modules/getbuildinfo.c
-	$(CC) -c $(PY_CORE_CFLAGS) \
+	$(CC) -c $(PY_CFLAGS) \
 	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
 	      -DGITTAG="\"`LC_ALL=C $(GITTAG)`\"" \
 	      -DGITBRANCH="\"`LC_ALL=C $(GITBRANCH)`\"" \
 	      -o $@ $(srcdir)/Modules/getbuildinfo.c
 
 Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile
-	$(CC) -c $(PY_CORE_CFLAGS) -DPYTHONPATH='"$(PYTHONPATH)"' \
+	$(CC) -c $(PY_CFLAGS) -DPYTHONPATH='"$(PYTHONPATH)"' \
 		-DPREFIX='"$(prefix)"' \
 		-DEXEC_PREFIX='"$(exec_prefix)"' \
 		-DVERSION='"$(VERSION)"' \
@@ -662,7 +656,7 @@ Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile
 		-o $@ $(srcdir)/Modules/getpath.c
 
 Modules/python.o: $(srcdir)/Modules/python.c
-	$(MAINCC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Modules/python.c
+	$(MAINCC) -c $(PY_CFLAGS) -o $@ $(srcdir)/Modules/python.c
 
 Modules/posixmodule.o: $(srcdir)/Modules/posixmodule.c $(srcdir)/Modules/posixmodule.h
 
@@ -671,7 +665,7 @@ Modules/grpmodule.o: $(srcdir)/Modules/grpmodule.c $(srcdir)/Modules/posixmodule
 Modules/pwdmodule.o: $(srcdir)/Modules/pwdmodule.c $(srcdir)/Modules/posixmodule.h
 
 $(PGEN):	$(PGENOBJS)
-		$(CC) $(OPT) $(PY_LDFLAGS) $(PGENOBJS) $(LIBS) -o $(PGEN)
+		$(CC) $(OPT) $(LDFLAGS) $(PGENOBJS) $(LIBS) -o $(PGEN)
 
 .PHONY: regen-grammar
 regen-grammar: $(PGEN)
@@ -707,10 +701,10 @@ regen-ast:
 Python/compile.o Python/symtable.o Python/ast.o: $(srcdir)/Include/graminit.h $(srcdir)/Include/Python-ast.h
 
 Python/getplatform.o: $(srcdir)/Python/getplatform.c
-		$(CC) -c $(PY_CORE_CFLAGS) -DPLATFORM='"$(MACHDEP)"' -o $@ $(srcdir)/Python/getplatform.c
+		$(CC) -c $(PY_CFLAGS) -DPLATFORM='"$(MACHDEP)"' -o $@ $(srcdir)/Python/getplatform.c
 
 Python/importdl.o: $(srcdir)/Python/importdl.c
-		$(CC) -c $(PY_CORE_CFLAGS) -I$(DLINCLDIR) -o $@ $(srcdir)/Python/importdl.c
+		$(CC) -c $(PY_CFLAGS) -I$(DLINCLDIR) -o $@ $(srcdir)/Python/importdl.c
 
 Objects/unicodectype.o:	$(srcdir)/Objects/unicodectype.c \
 				$(srcdir)/Objects/unicodetype_db.h
@@ -1368,7 +1362,7 @@ config.status:	$(srcdir)/configure
 
 # Some make's put the object file in the current directory
 .c.o:
-	$(CC) -c $(PY_CORE_CFLAGS) -o $@ $<
+	$(CC) -c $(PY_CFLAGS) -o $@ $<
 
 # Run reindent on the library
 reindent:
