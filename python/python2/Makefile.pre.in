@@ -101,9 +101,6 @@ MACHDEP=	@MACHDEP@
 # Multiarch directory (may be empty)
 MULTIARCH=	@MULTIARCH@
 
-# Multiarch directory (may be empty)
-MULTIARCH=	@MULTIARCH@
-
 # Install prefix for architecture-independent files
 prefix=		@prefix@
 
@@ -124,22 +121,20 @@ SCRIPTDIR=	$(prefix)/lib
 # Detailed destination directories
 BINLIBDEST=	$(LIBDIR)/python$(VERSION)
 LIBDEST=	$(SCRIPTDIR)/python$(VERSION)
-INCLUDEPY=	$(INCLUDEDIR)/python$(VERSION)$(DEBUG_EXT)
-CONFINCLUDEPY=	$(CONFINCLUDEDIR)/python$(VERSION)$(DEBUG_EXT)
+INCLUDEPY=	$(INCLUDEDIR)/python$(VERSION)
+CONFINCLUDEPY=	$(CONFINCLUDEDIR)/python$(VERSION)
 LIBP=		$(LIBDIR)/python$(VERSION)
 
 # Symbols used for using shared libraries
 SO=		@SO@
-LDSHARED=	@LDSHARED@ $(PY_LDFLAGS)
-BLDSHARED=	@BLDSHARED@ $(PY_LDFLAGS) $(PY_CFLAGS)
+LDSHARED=	@LDSHARED@ $(LDFLAGS)
+BLDSHARED=	@BLDSHARED@ $(LDFLAGS)
 LDCXXSHARED=	@LDCXXSHARED@
 DESTSHARED=	$(BINLIBDEST)/lib-dynload
 
 # Executable suffix (.exe on Windows and Mac OS X)
 EXE=		@EXEEXT@
 BUILDEXE=	@BUILDEXEEXT@
-
-DEBUG_EXT=	@DEBUG_EXT@
 
 # Short name and location for Mac OS X Python framework
 UNIVERSALSDK=@UNIVERSALSDK@
@@ -405,7 +400,7 @@ LIBRARY_OBJS=	\
 		$(PYTHON_OBJS) \
 		$(MODULE_OBJS) \
 		$(SIGNAL_OBJS) \
-		$(sort $(MODOBJS))
+		$(MODOBJS)
 
 #########################################################################
 # Rules
@@ -498,9 +493,9 @@ coverage-report: regen-grammar
 
 # Build the interpreter
 $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
-		$(LINKCC) $(PY_LDFLAGS) $(PY_CFLAGS) $(LINKFORSHARED) -o $@ \
+		$(LINKCC) $(PY_LDFLAGS) $(LINKFORSHARED) -o $@ \
 			Modules/python.o \
-			-Wl,--whole-archive $(BLDLIBRARY) -Wl,--no-whole-archive $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
+			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
 
 platform: $(BUILDPYTHON) pybuilddir.txt
 	$(RUNSHARED) $(PYTHON_FOR_BUILD) -c 'import sys ; from sysconfig import get_platform ; print get_platform()+"-"+sys.version[0:3]' >platform
@@ -547,10 +542,10 @@ $(LIBRARY): $(LIBRARY_OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJECT_OBJS)
 	$(AR) $(ARFLAGS) $@ $(PYTHON_OBJS)
 	$(AR) $(ARFLAGS) $@ $(MODULE_OBJS) $(SIGNAL_OBJS)
-	$(AR) $(ARFLAGS) $@ $(sort $(MODOBJS))
+	$(AR) $(ARFLAGS) $@ $(MODOBJS)
 	$(RANLIB) $@
 
-libpython$(VERSION)$(DEBUG_EXT).so: $(LIBRARY_OBJS)
+libpython$(VERSION).so: $(LIBRARY_OBJS)
 	if test $(INSTSONAME) != $(LDLIBRARY); then \
 		$(BLDSHARED) $(PY_LDFLAGS) $(CCSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
 		$(LN) -f $(INSTSONAME) $@; \
@@ -625,10 +620,6 @@ Makefile Modules/config.c: Makefile.pre \
 	@mv config.c Modules
 	@echo "The Makefile was updated, you may need to re-run make."
 
-Python/dynload_shlib.o: $(srcdir)/Python/dynload_shlib.c Makefile
-	$(CC) -c $(PY_CORE_CFLAGS) \
-		$(if $(MULTIARCH),-DMULTIARCH='"$(MULTIARCH)"') \
-		-o $@ $(srcdir)/Python/dynload_shlib.c
 
 Modules/Setup: $(srcdir)/Modules/Setup.dist
 	@if test -f Modules/Setup; then \
@@ -660,8 +651,6 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
 	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
 	      -DGITTAG="\"`LC_ALL=C $(GITTAG)`\"" \
 	      -DGITBRANCH="\"`LC_ALL=C $(GITBRANCH)`\"" \
-	      $(if $(BUILD_DATE),-DDATE='"$(BUILD_DATE)"') \
-	      $(if $(BUILD_TIME),-DTIME='"$(BUILD_TIME)"') \
 	      -o $@ $(srcdir)/Modules/getbuildinfo.c
 
 Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile
@@ -1198,8 +1187,6 @@ python2-config: $(srcdir)/Misc/python2-config.in
 	# Substitution happens here, as the completely-expanded BINDIR
 	# is not available in configure
 	sed -e "s,@EXENAME@,$(BINDIR)/python$(VERSION)$(EXE)," < $(srcdir)/Misc/python2-config.in >python2-config
-	# Replace makefile compat. variable references with shell script compat. ones; $(VAR) -> ${VAR}
-	sed -e "s,\$$(\([A-Za-z0-9_]*\)),\$$\{\1\},g" < Misc/python2-config.sh >python2-config.sh
 
 # Install the include files
 INCLDIRSTOMAKE=$(INCLUDEDIR) $(CONFINCLUDEDIR) $(INCLUDEPY) $(CONFINCLUDEPY)
@@ -1220,11 +1207,11 @@ inclinstall:
 	$(INSTALL_DATA) pyconfig.h $(DESTDIR)$(CONFINCLUDEPY)/pyconfig.h
 
 # Install the library and miscellaneous stuff needed for extending/embedding
-# This goes into $(exec_prefix)$(DEBUG_EXT)
-LIBPL=		$(LIBP)/config-$(MULTIARCH)$(DEBUG_EXT)
+# This goes into $(exec_prefix)
+LIBPL=		$(LIBP)/config
 
 # pkgconfig directory
-LIBPC=		$(LIBDIR)/$(MULTIARCH)/pkgconfig
+LIBPC=		$(LIBDIR)/pkgconfig
 
 libainstall:	@DEF_MAKE_RULE@ python2-config
 	@for i in $(LIBDIR) $(LIBP) $(LIBPL) $(LIBPC); \
@@ -1259,7 +1246,6 @@ libainstall:	@DEF_MAKE_RULE@ python2-config
 	$(INSTALL_SCRIPT) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
 	$(INSTALL_SCRIPT) python2-config $(DESTDIR)$(BINDIR)/python$(VERSION)-config
 	rm python2-config
-	$(INSTALL_SCRIPT) python2-config.sh $(DESTDIR)$(BINDIR)/python2-config.sh
 	@if [ -s Modules/python.exp -a \
 		"`echo $(MACHDEP) | sed 's/^\(...\).*/\1/'`" = "aix" ]; then \
 		echo; echo "Installing support files for building shared extension modules on AIX:"; \
@@ -1504,11 +1490,6 @@ patchcheck:
 # Dependencies
 
 Python/thread.o: @THREADHEADERS@
-
-Python/sysmodule.o: $(srcdir)/Python/sysmodule.c Makefile
-	$(CC) -c $(PY_CORE_CFLAGS)  -I../Include -I../PC \
-		-DMULTIARCH='"$(MULTIARCH)"' \
-		-o $@ $(srcdir)/Python/sysmodule.c
 
 # Declare targets that aren't real files
 .PHONY: all build_all sharedmods check-clean-src oldsharedmods test quicktest memtest

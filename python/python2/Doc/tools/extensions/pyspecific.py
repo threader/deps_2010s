@@ -103,11 +103,7 @@ class ImplementationDetail(Directive):
 # Support for documenting decorators
 
 from sphinx import addnodes
-try:
-    from sphinx.domains.python import PyFunction, PyMethod
-except ImportError:
-    from sphinx.domains.python import PyClassmember as PyMethod
-    from sphinx.domains.python import PyModulelevel as PyFunction
+from sphinx.domains.python import PyModulelevel, PyClassmember
 
 class PyDecoratorMixin(object):
     def handle_signature(self, sig, signode):
@@ -118,16 +114,16 @@ class PyDecoratorMixin(object):
     def needs_arglist(self):
         return False
 
-class PyDecoratorFunction(PyDecoratorMixin, PyFunction):
+class PyDecoratorFunction(PyDecoratorMixin, PyModulelevel):
     def run(self):
         # a decorator function is a function after all
         self.name = 'py:function'
-        return PyFunction.run(self)
+        return PyModulelevel.run(self)
 
-class PyDecoratorMethod(PyDecoratorMixin, PyMethod):
+class PyDecoratorMethod(PyDecoratorMixin, PyClassmember):
     def run(self):
         self.name = 'py:method'
-        return PyMethod.run(self)
+        return PyClassmember.run(self)
 
 
 # Support for building "topic help" for pydoc

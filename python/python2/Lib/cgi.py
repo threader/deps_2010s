@@ -121,8 +121,7 @@ log = initlog           # The current logging function
 # 0 ==> unlimited input
 maxlen = 0
 
-def parse(fp=None, environ=os.environ, keep_blank_values=0, strict_parsing=0,
-          separator='&'):
+def parse(fp=None, environ=os.environ, keep_blank_values=0, strict_parsing=0):
     """Parse a query in the environment or from a file (default stdin)
 
         Arguments, all optional:
@@ -141,9 +140,6 @@ def parse(fp=None, environ=os.environ, keep_blank_values=0, strict_parsing=0,
         strict_parsing: flag indicating what to do with parsing errors.
             If false (the default), errors are silently ignored.
             If true, errors raise a ValueError exception.
-
-        separator: str. The symbol to use for separating the query arguments.
-            Defaults to &.
     """
     if fp is None:
         fp = sys.stdin
@@ -152,7 +148,7 @@ def parse(fp=None, environ=os.environ, keep_blank_values=0, strict_parsing=0,
     if environ['REQUEST_METHOD'] == 'POST':
         ctype, pdict = parse_header(environ['CONTENT_TYPE'])
         if ctype == 'multipart/form-data':
-            return parse_multipart(fp, pdict, separator=separator)
+            return parse_multipart(fp, pdict)
         elif ctype == 'application/x-www-form-urlencoded':
             clength = int(environ['CONTENT_LENGTH'])
             if maxlen and clength > maxlen:
@@ -175,30 +171,27 @@ def parse(fp=None, environ=os.environ, keep_blank_values=0, strict_parsing=0,
         else:
             qs = ""
         environ['QUERY_STRING'] = qs    # XXX Shouldn't, really
-    return urlparse.parse_qs(qs, keep_blank_values, strict_parsing,
-                             separator=separator)
+    return urlparse.parse_qs(qs, keep_blank_values, strict_parsing)
 
 
 # parse query string function called from urlparse,
 # this is done in order to maintain backward compatibility.
 
-def parse_qs(qs, keep_blank_values=0, strict_parsing=0, separator='&'):
+def parse_qs(qs, keep_blank_values=0, strict_parsing=0):
     """Parse a query given as a string argument."""
     warn("cgi.parse_qs is deprecated, use urlparse.parse_qs instead",
          PendingDeprecationWarning, 2)
-    return urlparse.parse_qs(qs, keep_blank_values, strict_parsing,
-                             separator=separator)
+    return urlparse.parse_qs(qs, keep_blank_values, strict_parsing)
 
 
-def parse_qsl(qs, keep_blank_values=0, strict_parsing=0, max_num_fields=None,
-              separator='&'):
+def parse_qsl(qs, keep_blank_values=0, strict_parsing=0, max_num_fields=None):
     """Parse a query given as a string argument."""
     warn("cgi.parse_qsl is deprecated, use urlparse.parse_qsl instead",
          PendingDeprecationWarning, 2)
     return urlparse.parse_qsl(qs, keep_blank_values, strict_parsing,
-                              max_num_fields, separator=separator)
+                              max_num_fields)
 
-def parse_multipart(fp, pdict, separator='&'):
+def parse_multipart(fp, pdict):
     """Parse multipart input.
 
     Arguments:
@@ -402,7 +395,7 @@ class FieldStorage:
 
     def __init__(self, fp=None, headers=None, outerboundary="",
                  environ=os.environ, keep_blank_values=0, strict_parsing=0,
-                 max_num_fields=None, separator='&'):
+                 max_num_fields=None):
         """Constructor.  Read multipart/* until last part.
 
         Arguments, all optional:
@@ -437,7 +430,6 @@ class FieldStorage:
         self.keep_blank_values = keep_blank_values
         self.strict_parsing = strict_parsing
         self.max_num_fields = max_num_fields
-        self.separator = separator
         if 'REQUEST_METHOD' in environ:
             method = environ['REQUEST_METHOD'].upper()
         self.qs_on_post = None
@@ -621,8 +613,7 @@ class FieldStorage:
         if self.qs_on_post:
             qs += '&' + self.qs_on_post
         query = urlparse.parse_qsl(qs, self.keep_blank_values,
-                                   self.strict_parsing, self.max_num_fields,
-                                   separator=self.separator)
+                                   self.strict_parsing, self.max_num_fields)
         self.list = [MiniFieldStorage(key, value) for key, value in query]
         self.skip_lines()
 
@@ -638,8 +629,7 @@ class FieldStorage:
             query = urlparse.parse_qsl(self.qs_on_post,
                                        self.keep_blank_values,
                                        self.strict_parsing,
-                                       self.max_num_fields,
-                                       separator=self.separator)
+                                       self.max_num_fields)
             self.list.extend(MiniFieldStorage(key, value)
                              for key, value in query)
             FieldStorageClass = None
@@ -652,7 +642,7 @@ class FieldStorage:
         klass = self.FieldStorageClass or self.__class__
         part = klass(self.fp, {}, ib,
                      environ, keep_blank_values, strict_parsing,
-                     max_num_fields, separator=self.separator)
+                     max_num_fields)
 
         # Throw first part away
         while not part.done:

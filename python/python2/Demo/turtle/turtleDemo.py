@@ -3,12 +3,10 @@ import sys
 import os
 
 from Tkinter import *
-try:
-    from idlelib.Percolator import Percolator
-    from idlelib.ColorDelegator import ColorDelegator
-    from idlelib.textView import view_file
-except ImportError, msg:
-    raise ImportError, str(msg) + ', please install the idle package'
+from idlelib.Percolator import Percolator
+from idlelib.ColorDelegator import ColorDelegator
+from idlelib.textView import view_file
+
 import turtle
 import time
 

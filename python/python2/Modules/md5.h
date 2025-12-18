@@ -76,13 +76,13 @@ extern "C"
 #endif
 
 /* Initialize the algorithm. */
-void _Py_md5_init(md5_state_t *pms);
+void md5_init(md5_state_t *pms);
 
 /* Append a string to the message. */
-void _Py_md5_append(md5_state_t *pms, const md5_byte_t *data, unsigned int nbytes);
+void md5_append(md5_state_t *pms, const md5_byte_t *data, unsigned int nbytes);
 
 /* Finish the message and return the digest. */
-void _Py_md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
+void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
 
 #ifdef __cplusplus
 }  /* end extern "C" */
