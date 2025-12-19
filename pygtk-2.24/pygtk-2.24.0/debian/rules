@@ -10,7 +10,7 @@ CFLAGS += -Wall -g -O$(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),0,2)
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-configure_flags += --prefix=/usr --enable-thread --build=$(DEB_BUILD_GNU_TYPE)
+configure_flags += --prefix=/usr --enable-thread --build=$(DEB_BUILD_GNU_TYPE) PYTHON=python2.7 PYTHON_PREFIX=/usr/lib/python2.7/
 
 ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
 	configure_flags += --host=$(DEB_HOST_GNU_TYPE)
