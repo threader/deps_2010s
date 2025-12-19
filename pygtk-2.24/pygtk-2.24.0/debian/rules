@@ -110,9 +110,9 @@ build-%/install-stamp: build-%/build-stamp
 dbg-build-%/install-stamp: dbg-build-%/build-stamp
 	dh_testdir
 	dh_testroot
-	PYTHON=/usr/bin/python$* $(MAKE) -C dbg-build-$* install DESTDIR=$(CURDIR)/debian/python-gtk2-dbg pyexecdir=$(call py_libdir_sh, $*)
-	find debian/python-gtk2-dbg ! -type d ! -name '*.so' | xargs rm -f
-	find debian/python-gtk2-dbg -depth -empty -exec rmdir {} \;
+	PYTHON=/usr/bin/python$* $(MAKE) -C dbg-build-$* install DESTDIR=$(CURDIR)/debian/python2-gtk2-dbg pyexecdir=$(call py_libdir_sh, $*)
+	find debian/python2-gtk2-dbg ! -type d ! -name '*.so' | xargs rm -f
+	find debian/python2-gtk2-dbg -depth -empty -exec rmdir {} \;
 	touch $@
 
 install-stamp:
@@ -142,8 +142,8 @@ install-stamp:
 	# finally, install files from DESTDIR in the per-package dirs
 	dh_install
 	# install rtupdate script to handle Python default runtime change
-	install -d debian/python-gtk2-dev/usr/share/python2/runtime.d
-	install debian/python-gtk2-dev.rtupdate debian/python-gtk2-dev/usr/share/python2/runtime.d
+	install -d debian/python2-gtk2-dev/usr/share/python2/runtime.d
+	install debian/python2-gtk2-dev.rtupdate debian/python2-gtk2-dev/usr/share/python2/runtime.d
 	for i in $$(find debian/python-*-dbg -name '*.so'); do \
 	  b=$$(basename $$i .so); \
 	  mv $$i $$(dirname $$i)/$${b}_d.so; \
@@ -170,14 +170,14 @@ binary-indep: build install $(maybe_check)
 	dh_testroot
 	dh_installdocs -i
 	dh_installexamples -i
-	find debian/python-gtk2-doc/usr/share/doc -name '*.py[co]' -delete
+	find debian/python2-gtk2-doc/usr/share/doc -name '*.py[co]' -delete
 	dh_installchangelogs -i ChangeLog
 	dh_link -i
 	dh_compress -i -X.py -X.glade
 	dh_fixperms -i
 	# More permission fixing
-	grep -rlZ "^#\!.*python" debian/python-gtk2-dev/usr | xargs -0r chmod 755
-	dh_python3 -ppython-gtk2-doc /usr/share/pygtk
+	grep -rlZ "^#\!.*python" debian/python2-gtk2-dev/usr | xargs -0r chmod 755
+	dh_python3 -ppython2-gtk2-doc /usr/share/pygtk
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
@@ -189,15 +189,15 @@ binary-arch: build install $(maybe_check)
 	dh_installdocs -a
 	dh_installexamples -s
 	dh_installchangelogs ChangeLog -s
-	dh_strip -s -Npython-gtk2-dbg --dbg-package=python-gtk2-dbg
-	rm -rf debian/python-gtk2-dbg/usr/share/doc/python-gtk2-dbg
-	ln -s python-gtk2 debian/python-gtk2-dbg/usr/share/doc/python-gtk2-dbg
+	dh_strip -s -Npython2-gtk2-dbg --dbg-package=python2-gtk2-dbg
+	rm -rf debian/python2-gtk2-dbg/usr/share/doc/python2-gtk2-dbg
+	ln -s python2-gtk2 debian/python2-gtk2-dbg/usr/share/doc/python2-gtk2-dbg
 	dh_link -s
 	dh_compress -s -X.py -X.glade
 	dh_fixperms -s
 	dh_python3 -a
 	if ! dpkg-vendor --is ubuntu; then \
-		dh_numpy -s -ppython-gtk2; \
+		dh_numpy3 -s -ppython2-gtk2; \
 	fi
 	dh_installdeb -s
 	dh_shlibdeps -s
