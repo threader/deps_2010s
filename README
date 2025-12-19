@@ -4,13 +4,12 @@ I think i managed to gather the latest version of python2 compatible packages. n
 TODO: Change version to not have apt want to 'update' the packages....
 
 build cmd: 
-dpkg-buildpackage -us -uc; dh_clean; dpkg-buildpackage -us -uc -nc -j5 --no-post-clean
+dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean; dpkg-buildpackage -us -uc -nc -us -ui --no-sign --build=binary -j5 --no-post-clean
 ---
 
 Building python2
 ---
-Needs sorting (makefile.in) building outside dpkg-buildpackage (makefile) config, path's and names need to change to python2.
-
+should work with build cmd now and not break everything.
 ---
 Building pygtk-2.24
 python-cairo-dev can at least be grabbed from 'oldoldstable' still.
