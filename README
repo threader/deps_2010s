@@ -1,22 +1,35 @@
-## Notes 
-I think i managed to gather the latest version of python2 compatible packages. now remains to get it building and working, again.
-
-TODO: Change version to not have apt want to 'update' the packages....
-
+# Trying to get everything running in 2025/26.
 build cmd: 
-dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean; dpkg-buildpackage -us -uc -nc -us -ui --no-sign --build=binary -j5 --no-post-clean
+dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean
 ---
-
 Building python2
+
+should just work with build cmd:
+dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean; dpkg-buildpackage -us -uc -nc -us -ui --no-sign --build=binary -j5 --no-post-clean
+
 ---
-should work with build cmd now and not break everything.
----
-python-defaults-2.7.18 should be neutered now and not interfere with normal operations
+python-defaults-2.7.18 should be neutered now and not interfere with
+normal system operations. some files in there are required... 
+specifically python2.pm and a few others i grabbed from 'debian buster'
+last time i was messing with this, i might do that again....
 ---
 Building pygtk-2.24
-python-cairo-dev can at least be grabbed from 'oldoldstable' still.
+buid cmd: dpkg-buildpackage -us -nc -us -ui -uc --no-sign --build=binary -j5 --no-pre-clean
+
+ - needs 'pycairo-py2'. i manually installed this because:
+Can't exec "dh_python2": No such file or directory at /usr/share/perl5/Debian/Debhelper/SequencerUtil.pm line 534:
+ so "cd pycairo-py2; python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install" - and remove python*-cairo as needed.
+
+then we need python2-gobjects that requires 'apt install docbook-xsl'
+now 'pygobjects_0' compiles but something i've done isnt adding up,
+the debian/rules changes or so, likewise seems to be the case for pygtk, 
+all the libraries and all are well and alive in 
+deps/pygtk-2.24/pygtk-2.24.0/build-2.7 but not included in the package. 
+somehow even doing a manual 'make install' in that dir doesnt make the
+pygtk module work under python2. 
 
 These are simply removed from deps:
+python*-cairo*
 python-cairo-dbg
 python-gobject-2-dbg
 
@@ -43,9 +56,10 @@ dpkg-buildpackage -us -uc -nc --no-post-clean
 ---
 pycairo: 
  deps: needed python2.pm - so i hacked together a python2 version using the buster sources and edited the build rules and makefile
-
-
-My source.list file has these entries: 
+edit 2025: i now pieced together python2-defaults. i had a strange feeling
+had done a lot of this work before... 
+-- 
+My source.list file had these entries in 2024: 
 
 #legacy
 deb [ allow-insecure=yes ] http://archive.debian.org/debian/ squeeze main contrib non-free
