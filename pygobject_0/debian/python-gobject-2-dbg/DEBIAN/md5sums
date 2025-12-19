@@ -1,0 +1,6 @@
+d28556edb456fcb346e5802e4457d36a  glib/_glib.so
+cb1a0ee3be245aabfe3cf09cb0804640  gobject/_gobject.so
+3ed7f839bca72d57b7460bd7b9a07ce5  gtk-2.0/gio/_gio.so
+3e2714d94ce2174c73a5f516cbf3a911  gtk-2.0/gio/unix.so
+e58e9bf72dd2a400e467321687f8be89  usr/lib/debug/.build-id/5d/ba8bfee8c78a42f37698c1e3b4dabd26940763.debug
+79a4f52dde08449e98c72a879d19b494  usr/lib/libpyglib-2.0-python2-dbg.so.0.0.0
