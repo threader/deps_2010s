@@ -79,7 +79,7 @@ NVER=2.8
 PVER=python2.7
 PRIORITY=$(shell echo $(VER) | tr -d '.')0
 
-PREVVER	:= $(shell awk '/^python/ && NR > 1 {print substr($$2,2,length($$2)-2); exit}' debian/changelog)
+PREVVER	:= $(shell awk '/^python2/ && NR > 1 {print substr($$2,2,length($$2)-2); exit}' debian/changelog)
 
 # default versions are built from the python-defaults source package
 # keep the definition to adjust package priorities.
@@ -297,7 +297,7 @@ stamps/stamp-build-static: stamps/stamp-configure-static
 	: # check that things are correctly built
 ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
   ifneq (,$(filter $(DEB_HOST_ARCH_OS), linux))
-	cd $(buildd_static) && ./python -c 'from _multiprocessing import SemLock'
+	cd $(buildd_static) && ./python2 -c 'from _multiprocessing import SemLock'
   endif
 endif
 
@@ -456,15 +456,15 @@ ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
 	for m in $(MIN_MODS) $(MIN_PACKAGES) $(MIN_EXTS) $(MIN_BUILTINS); do \
 	  echo "import $$m"; \
 	done > $(buildd_static)/minmods.py
-	cd $(buildd_static) && ./python ../debian/pymindeps.py minmods.py \
+	cd $(buildd_static) && ./python2 ../debian/pymindeps.py minmods.py \
 	  > $(buildd_static)/mindeps.txt
 	if [ -x /usr/bin/dot ]; then \
 	  cd $(buildd_static); \
-	  ./python ../debian/depgraph.py < mindeps.txt > mindeps.dot; \
+	  ./python2 ../debian/depgraph.py < mindeps.txt > mindeps.dot; \
 	  dot -Tpng -o $(buildd_static)/mindeps.png \
 	    $(buildd_static)/mindeps.dot; \
 	else true; fi
-	cd $(buildd_static) && ./python ../debian/mincheck.py \
+	cd $(buildd_static) && ./python2 ../debian/mincheck.py \
 		minmods.py mindeps.txt
 endif
 	touch stamps/stamp-mincheck
@@ -559,7 +559,7 @@ else
 	  echo '#! /bin/sh'; \
 	  echo 'set -x'; \
 	  echo 'export TERM=$${TERM:-dumb}'; \
-	  echo '$(buildd_static)/python $(CURDIR)/debian/script.py test_results '\''make test TESTOPTS="$(TESTOPTS_DEBUG)"'\'; \
+	  echo '$(buildd_static)/python2 $(CURDIR)/debian/script.py test_results '\''make test TESTOPTS="$(TESTOPTS_DEBUG)"'\'; \
 	  echo 'echo DONE'; \
 	) > $(buildd_debug)/run_tests
 	chmod 755 $(buildd_debug)/run_tests
@@ -575,7 +575,7 @@ else
 	  echo 'set -x'; \
 	  echo 'export TERM=$${TERM:-dumb}'; \
 	  echo 'export $(SET_LOCPATH)'; \
-	  echo '$(buildd_static)/python $(CURDIR)/debian/script.py test_results '\''make test EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" TESTOPTS="$(TESTOPTS)"'\'; \
+	  echo '$(buildd_static)/python2 $(CURDIR)/debian/script.py test_results '\''make test EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" TESTOPTS="$(TESTOPTS)"'\'; \
 	  echo 'echo DONE'; \
 	) > $(buildd_static)/run_tests
 	chmod 755 $(buildd_static)/run_tests
@@ -590,7 +590,7 @@ else
 	  echo 'set -x'; \
 	  echo 'export TERM=$${TERM:-dumb}'; \
 	  echo 'export $(SET_LOCPATH)'; \
-	  echo '$(buildd_static)/python $(CURDIR)/debian/script.py test_results '\''make test EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" TESTOPTS="$(TESTOPTS)"'\'; \
+	  echo '$(buildd_static)/python2 $(CURDIR)/debian/script.py test_results '\''make test EXTRA_CFLAGS="$(EXTRA_OPT_CFLAGS)" TESTOPTS="$(TESTOPTS)"'\'; \
 	  echo 'echo DONE'; \
 	) > $(buildd_shared)/run_tests
 	chmod 755 $(buildd_shared)/run_tests
@@ -606,18 +606,18 @@ endif
 stamps/stamp-pystone:
 ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
 	@echo "BEGIN pystone static"
-	cd $(buildd_static) && ./python ../Lib/test/pystone.py
-	cd $(buildd_static) && ./python ../Lib/test/pystone.py
+	cd $(buildd_static) && ./python2 ../Lib/test/pystone.py
+	cd $(buildd_static) && ./python2 ../Lib/test/pystone.py
 	@echo "END pystone static"
 	@echo "BEGIN pystone shared"
 	cd $(buildd_shared) \
-		&& LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. ./python ../Lib/test/pystone.py
+		&& LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. ./python2 ../Lib/test/pystone.py
 	cd $(buildd_shared) \
-		&& LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. ./python ../Lib/test/pystone.py
+		&& LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. ./python2 ../Lib/test/pystone.py
 	@echo "END pystone shared"
 	@echo "BEGIN pystone debug"
-	cd $(buildd_debug) && ./python ../Lib/test/pystone.py
-	cd $(buildd_debug) && ./python ../Lib/test/pystone.py
+	cd $(buildd_debug) && ./python2 ../Lib/test/pystone.py
+	cd $(buildd_debug) && ./python2 ../Lib/test/pystone.py
 	@echo "END pystone debug"
 endif
 	touch stamps/stamp-pystone
@@ -632,20 +632,20 @@ ifeq ($(WITHOUT_BENCH),yes)
 else
 	@echo "BEGIN pybench static"
 	cd $(buildd_static) \
-	  && time ./python ../Tools/pybench/pybench.py -f run1.pybench $(pybench_options)
+	  && time ./python2 ../Tools/pybench/pybench.py -f run1.pybench $(pybench_options)
 	cd $(buildd_static) \
-	  && ./python ../Tools/pybench/pybench.py -f run2.pybench -c run1.pybench $(pybench_options)
+	  && ./python2 ../Tools/pybench/pybench.py -f run2.pybench -c run1.pybench $(pybench_options)
 	@echo "END pybench static"
 	@echo "BEGIN pybench shared"
 	cd $(buildd_shared) \
 	  && LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. \
-		./python ../Tools/pybench/pybench.py -f run1.pybench $(pybench_options)
+		./python2 ../Tools/pybench/pybench.py -f run1.pybench $(pybench_options)
 	cd $(buildd_shared) \
 	  && LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. \
-		./python ../Tools/pybench/pybench.py -f run2.pybench -c run1.pybench $(pybench_options)
+		./python2 ../Tools/pybench/pybench.py -f run2.pybench -c run1.pybench $(pybench_options)
 	@echo "END pybench shared"
 	@echo "BEGIN shared/static comparision"
-	$(buildd_static)/python Tools/pybench/pybench.py \
+	$(buildd_static)/python2 Tools/pybench/pybench.py \
 	  -s $(buildd_static)/run2.pybench -c $(buildd_shared)/run2.pybench \
 	  | tee $(buildd_static)/pybench.log
 	@echo "END shared/static comparision"
@@ -655,7 +655,7 @@ endif
 minimal-test:
 	rm -rf mintest
 	mkdir -p mintest/lib mintest/dynlib mintest/testlib mintest/all-lib
-	cp -p $(buildd_static)/python mintest/
+	cp -p $(buildd_static)/python2 mintest/
 	cp -p $(foreach i,$(MIN_MODS),Lib/$(i).py) \
 		mintest/lib/
 	cp -a $(foreach i,$(MIN_PACKAGES),Lib/$(i)) \
@@ -674,7 +674,7 @@ minimal-test:
 	  echo "]"; \
 	  cat Lib/test/regrtest.py; \
 	) > mintest/lib/test/mintest.py
-	cd mintest && ./python -E -S lib/test/mintest.py \
+	cd mintest && ./python2 -E -S lib/test/mintest.py \
 	     -x test_codecencodings_cn test_codecencodings_hk \
 		test_codecencodings_jp test_codecencodings_kr \
 		test_codecencodings_tw test_codecs test_multibytecodec \
@@ -904,7 +904,7 @@ endif
 
 ifeq ($(with_interp),shared)
 	: # install the statically linked runtime
-	install -m755 $(buildd_static)/python $(d)/usr/bin/python$(VER)-static
+	install -m755 $(buildd_static)/python2 $(d)/usr/bin/python$(VER)-static
 endif
 
 	mv $(d)/usr/bin/pydoc $(d)/usr/bin/pydoc$(VER)
@@ -1152,7 +1152,7 @@ endif
 	: # generate binfmt file
 	mkdir -p $(d_min)/usr/share/binfmts
 ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
-	$(buildd_static)/python debian/mkbinfmt.py $(PVER) \
+	$(buildd_static)/python2 debian/mkbinfmt.py $(PVER) \
 		> $(d_min)/usr/share/binfmts/$(PVER)
 else
 	$(PVER) debian/mkbinfmt.py $(PVER) > $(d_min)/usr/share/binfmts/$(PVER)
@@ -1236,7 +1236,7 @@ endif
 	cp -p Misc/SpecialBuilds.txt $(d_dbg)/usr/share/doc/$(p_base)/
 	cp -p debian/$(PVER)-dbg.README.Debian \
 		$(d_dbg)/usr/share/doc/$(p_base)/README.debug
-	cp -p $(buildd_debug)/python $(d_dbg)/usr/bin/$(PVER)-dbg
+	cp -p $(buildd_debug)/python2 $(d_dbg)/usr/bin/$(PVER)-dbg
 	cp -p $(d)-shdbg/usr/bin/python2-config.sh \
 		$(d_dbg)/usr/bin/$(PVER)-dbg-config
 #	cp -p $(buildd_debug)/build/lib*/*_d.so \
@@ -1304,7 +1304,7 @@ binary-indep: build-indep install stamps/stamp-control
 #			/usr/share/doc/$(p_base)/html/_static/underscore.js
 
 	: # devhelp docs
-	#$(buildd_static)/python debian/pyhtml2devhelp.py \
+	#$(buildd_static)/python2 debian/pyhtml2devhelp.py \
 	#	$(d_doc)/usr/share/doc/$(p_base)/html index.html $(VER) \
 	#	> $(d_doc)/usr/share/doc/$(p_base)/html/$(PVER).devhelp
 	#gzip -9nv $(d_doc)/usr/share/doc/$(p_base)/html/$(PVER).devhelp
