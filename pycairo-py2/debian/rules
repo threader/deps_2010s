@@ -23,6 +23,9 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	$(PYTHON) setup.py install --root $(PWD)/debian/tmp/
 	#dh_auto_install --builddir=obj-$(PYTHON) 
+	mkdir -p  $(PWD)/debian/tmp-doc/html
+
+ovverride_dh_installdocs:
 
 override_dh_auto_build:
 	# dh_auto_build --buildsystem=pybuild --builddir=obj-$(PYTHON) --with $(PYTHON) install
