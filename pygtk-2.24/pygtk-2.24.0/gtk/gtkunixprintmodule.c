@@ -29,7 +29,7 @@
 #include <gtk/gtk.h>
 #include <gtk/gtkunixprint.h>
 
-# include <pycairo.h>
+# include <pycairo/pycairo.h>
 Pycairo_CAPI_t *Pycairo_CAPI;
  
 void pygtkunixprint_register_classes(PyObject *d);

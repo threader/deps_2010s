@@ -26,7 +26,7 @@
 #include <pygobject.h>
 
 #include <pango/pangocairo.h>
-#include <pycairo.h>
+#include <pycairo/pycairo.h>
 
 /* include any extra headers needed here */
 

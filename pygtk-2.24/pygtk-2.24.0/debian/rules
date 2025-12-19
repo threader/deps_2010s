@@ -16,9 +16,9 @@ ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
 	configure_flags += --host=$(DEB_HOST_GNU_TYPE)
 endif
 
-PYDEFAULTVER := $(shell pyversions --default --version)
-PYVERS := $(shell pyversions --requested --version debian/control)
-PYVERS := $(filter-out $(PYDEFAULTVER), $(PYVERS)) $(PYDEFAULTVER)
+PYDEFAULTVER :=2
+PYVERS :=2 
+PYVERS :=2
 
 .PRECIOUS: build-%/configure-stamp dbg-build-%/configure-stamp
 

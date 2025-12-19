@@ -30,7 +30,7 @@
 #include <pyerrors.h>
 
 #ifdef HAVE_PYCAIRO
-# include <pycairo.h>
+# include <pycairo/pycairo.h>
 Pycairo_CAPI_t *Pycairo_CAPI;
 #endif
 

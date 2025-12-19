@@ -110,7 +110,7 @@ Depends: ${misc:Depends},
          python2-gtk2,
 Recommends: python2-gobject-2,
             python2-cairo,
-            python2-glade2
+            python-glade2
 Suggests: devhelp
 Description: Python bindings for the GTK+ widget set - documentation
  This package contains the documentation and API reference for the

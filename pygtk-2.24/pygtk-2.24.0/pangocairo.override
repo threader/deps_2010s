@@ -4,7 +4,7 @@ headers
 #define NO_IMPORT_PYGOBJECT
 #include <pygobject.h>
 #include <pango/pangocairo.h>
-#include <pycairo.h>
+#include <pycairo/pycairo.h>
 
 
 extern Pycairo_CAPI_t *Pycairo_CAPI;

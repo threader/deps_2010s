@@ -31,7 +31,7 @@ headers
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 
-#include <pycairo.h>
+#include <pycairo/pycairo.h>
 extern Pycairo_CAPI_t *Pycairo_CAPI;
 extern PyTypeObject PyGdkCairoContext_Type;
 
