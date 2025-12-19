@@ -41,7 +41,7 @@ _supported = environ.get('DEBPYTHON_SUPPORTED')
 _default = environ.get('DEBPYTHON_DEFAULT')
 if not _supported or not _default:
     _config = SafeConfigParser()
-    _config.read('/usr/share/python/debian_defaults')
+    _config.read('/usr/share/python2/debian_defaults')
     if not _default:
         _default = _config.get('DEFAULT', 'default-version')[6:]
     if not _supported:
@@ -90,10 +90,10 @@ def get_requested_versions(vrange=None, available=None):
 
     if available:
         versions = set(v for v in versions
-                       if exists("/usr/bin/python%d.%d" % v))
+                       if exists("/usr/bin/python2%d.%d" % v))
     elif available is False:
         versions = set(v for v in versions
-                       if not exists("/usr/bin/python%d.%d" % v))
+                       if not exists("/usr/bin/python2%d.%d" % v))
 
     return versions
 
