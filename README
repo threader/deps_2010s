@@ -11,6 +11,8 @@ Building python2
 ---
 should work with build cmd now and not break everything.
 ---
+python-defaults-2.7.18 should be neutered now and not interfere with normal operations
+---
 Building pygtk-2.24
 python-cairo-dev can at least be grabbed from 'oldoldstable' still.
 
