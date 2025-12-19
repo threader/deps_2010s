@@ -5,7 +5,7 @@ MANPAGES ?= dh_python2.1 pycompile.1 pyclean.1
 
 clean:
 #	make -C tests clean
-	make -C pydist clean
+#	make -C pydist clean
 	find . -name '*.py[co]' -delete
 	rm -f .coverage
 
@@ -27,7 +27,7 @@ install-runtime:
 install: install-dev install-runtime
 
 dist_fallback:
-	make -C pydist $@
+#	make -C pydist $@
 
 check_versions:
 	@set -e;\
