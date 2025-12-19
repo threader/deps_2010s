@@ -196,8 +196,8 @@ LIBOBJDIR=	Python/
 LIBOBJS=	@LIBOBJS@
 UNICODE_OBJS=   @UNICODE_OBJS@
 
-PYTHON=		python$(EXE)
-BUILDPYTHON=	python$(BUILDEXE)
+PYTHON=		python2$(EXE)
+BUILDPYTHON=	python2$(BUILDEXE)
 
 PYTHON_FOR_REGEN=@PYTHON_FOR_REGEN@
 PYTHON_FOR_BUILD=@PYTHON_FOR_BUILD@
@@ -992,8 +992,8 @@ bininstall:	altbininstall
 	-test -d $(DESTDIR)$(LIBPC) || $(INSTALL) -d -m $(DIRMODE) $(DESTDIR)$(LIBPC)
 	-rm -f $(DESTDIR)$(LIBPC)/python2.pc
 	(cd $(DESTDIR)$(LIBPC); $(LN) -s python-$(VERSION).pc python2.pc)
-	-rm -f $(DESTDIR)$(LIBPC)/python.pc
-	(cd $(DESTDIR)$(LIBPC); $(LN) -s python2.pc python.pc)
+	-rm -f $(DESTDIR)$(LIBPC)/python2.pc
+	(cd $(DESTDIR)$(LIBPC); $(LN) -s python2.pc python2.pc)
 
 # Install the interpreter with $(VERSION) affixed
 # This goes into $(exec_prefix)
@@ -1036,8 +1036,8 @@ altmaninstall:
 maninstall:	altmaninstall
 	-rm -f $(DESTDIR)$(MANDIR)/man1/python2.1
 	(cd $(DESTDIR)$(MANDIR)/man1; $(LN) -s python$(VERSION).1 python2.1)
-	-rm -f $(DESTDIR)$(MANDIR)/man1/python.1
-	(cd $(DESTDIR)$(MANDIR)/man1; $(LN) -s python2.1 python.1)
+	-rm -f $(DESTDIR)$(MANDIR)/man1/python2.1
+	(cd $(DESTDIR)$(MANDIR)/man1; $(LN) -s python2.1 python2.1)
 
 # Install the library
 PLATDIR=	@PLATDIR@
