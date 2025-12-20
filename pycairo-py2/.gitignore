@@ -21,6 +21,10 @@ dist
 .hypothesis
 *.pyd
 *.dll
+.mypy_cache
+.pytest_cache
+.idea
+*.egg-info
 
 # image files
 *.pdf

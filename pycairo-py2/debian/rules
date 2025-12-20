@@ -2,7 +2,11 @@
 DEB_COMPRESS_EXCLUDE= .js .inv
 
 PYTHON=python2
-
+prefix=/usr
+PYCAIRO_VERSION_MAJOR=2
+PYCAIRO_VERSION_MAJOR=7
+PYCAIRO_VERSION_MICRO=18
+VERSION=2.7
 
 %:
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --with $(PYTHON) 
@@ -29,7 +33,7 @@ ovverride_dh_installdocs:
 
 override_dh_auto_build:
 	# dh_auto_build --buildsystem=pybuild --builddir=obj-$(PYTHON) --with $(PYTHON) install
-	$(PYTHON) setup.py install --root $(PWD)/debian/tmp/
+	$(PYTHON) setup.py build
 
 #	pybuild setup.py install --root $(PWD)/debian/tmp/
 #	sphinx-build -bhtml docs debian/tmp-doc/html
@@ -39,5 +43,6 @@ override_dh_auto_build:
 
 
 override_dh_auto_clean:
+	$(PYTHON) setup.py clean
 	# dh_auto_clean --buildsystem=pybuild
 	rm -rf debian/tmp-doc

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import io
 import subprocess
@@ -140,7 +140,8 @@ class install_pkgconfig(Command):
 
         with open(target, "wb") as h:
             h.write((u"""\
-prefix=%(prefix)s
+prefix=/usr/
+#prefix=%(prefix)s
 
 Name: Pycairo
 Description: Python %(py_version)d bindings for cairo
