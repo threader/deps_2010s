@@ -2,7 +2,7 @@
 build cmd: 
 dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean
 ---
-Building python2
+Building python2 (deps/python/python2)
 
 should just work with build cmd:
 dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean; dpkg-buildpackage -us -uc -nc -us -ui --no-sign --build=binary -j5 --no-post-clean
@@ -12,15 +12,19 @@ python-defaults-2.7.18 should be neutered now and not interfere with
 normal system operations. some files in there are required... 
 specifically python2.pm and a few others i grabbed from 'debian buster'
 last time i was messing with this, i might do that again....
+
+anyway, dh_python3 can be used in place of dh_python2 
+	ln -s /usr/bin/dh_python3 /usr/bin/dh_python2
+	
 ---
-Building pygtk-2.24
+Building pygtk-2.24 (deps/pygtk-2.24/pygtk-2.24.0)
 buid cmd: dpkg-buildpackage -us -nc -us -ui -uc --no-sign --build=binary -j5 --no-pre-clean
 
- - needs 'pycairo-py2'. i manually installed this because:
+ - needs 'pycairo-py2'. (deps/pycairo-py2) i manually installed this because:
 Can't exec "dh_python2": No such file or directory at /usr/share/perl5/Debian/Debhelper/SequencerUtil.pm line 534:
  so "cd pycairo-py2; python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install" - and remove python*-cairo as needed.
 
-then we need python2-gobjects that requires 'apt install docbook-xsl'
+then we need python2-gobjects (deps/pygobject_0) that requires 'apt install docbook-xsl'
 now 'pygobjects_0' compiles but something i've done isnt adding up,
 the debian/rules changes or so, likewise seems to be the case for pygtk, 
 all the libraries and all are well and alive in 
