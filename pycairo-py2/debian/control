@@ -16,7 +16,7 @@ Homepage: http://cairographics.org/pycairo/
 Vcs-Git: https://anonscm.debian.org/git/python-modules/packages/pycairo.git
 Vcs-Browser: https://anonscm.debian.org/cgit/python-modules/packages/pycairo.git
 
-Package: python-cairo
+Package: python2-cairo
 Architecture: any
 Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends}
 Provides: ${python:Provides}
@@ -25,11 +25,11 @@ Description: Python bindings for the Cairo vector graphics library
  This package contains modules that allow you to use the Cairo vector
  graphics library in Python programs.
 
-Package: python-cairo-dbg
+Package: python2-cairo-dbg
 Section: debug
 Architecture: any
-Depends: python-cairo (= ${binary:Version}),
-         python-dbg,
+Depends: python2-cairo (= ${binary:Version}),
+         python2.7-dbg,
          ${misc:Depends},
          ${shlibs:Depends}
 Provides: ${python:Provides}
@@ -40,12 +40,12 @@ Description: Python bindings for the Cairo vector graphics library (debug extens
  .
  This package contains the extension built for the Python debug interpreter.
 
-Package: python-cairo-dev
+Package: python2-cairo-dev
 Architecture: all
 Depends: libjs-jquery,
          libjs-underscore,
-         python-cairo (>= ${binary:Version}),
+         python2-cairo (>= ${binary:Version}),
          ${misc:Depends}
 Description: Python cairo bindings: development files
  This package contains files that allow you to compile wrappers
- that interoperate with python-cairo (pycairo).
+ that interoperate with python2-cairo (pycairo).
