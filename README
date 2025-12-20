@@ -22,7 +22,7 @@ buid cmd: dpkg-buildpackage -us -nc -us -ui -uc --no-sign --build=binary -j5 --n
 
  - needs 'pycairo-py2'. (deps/pycairo-py2) i manually installed this because:
 Can't exec "dh_python2": No such file or directory at /usr/share/perl5/Debian/Debhelper/SequencerUtil.pm line 534:
- so "cd pycairo-py2; python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install" - and remove python*-cairo as needed.
+ so "cd pycairo-py2; python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install --prefix=/usr" - and remove python*-cairo as needed.
 
 then we need python2-gobjects (deps/pygobject_0) that requires 'apt install docbook-xsl'
 now 'pygobjects_0' compiles but something i've done isnt adding up,

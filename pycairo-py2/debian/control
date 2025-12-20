@@ -1,4 +1,4 @@
-Source: pycairo
+Source: pywcairo
 Section: python
 Priority: optional
 Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
@@ -48,4 +48,4 @@ Depends: libjs-jquery,
          ${misc:Depends}
 Description: Python cairo bindings: development files
  This package contains files that allow you to compile wrappers
- that interoperate with python2-cairo (pycairo).
+ that interoperate with python2-cairo (py2cairo).
