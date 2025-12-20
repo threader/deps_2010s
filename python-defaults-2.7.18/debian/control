@@ -105,7 +105,7 @@ Replaces: python2 (<= 2.7.3-1~), python2-minimal (<< 2.7.15-2)
 Description: minimal subset of the Python2 language
  This package contains the interpreter and some essential modules.  It's used
  in the boot process for some basic tasks.
- See /usr/share/doc/python2-minimal/README.Debian for a list of the modules
+ See /usr/share/doc/python2.7-minimal/README.Debian for a list of the modules
  contained in this package.
 XB-Cnf-Visible-Pkgname: python2
 

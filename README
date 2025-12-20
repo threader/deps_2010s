@@ -1,49 +1,76 @@
-# Trying to get everything running in 2025/26.
+# Deps like it's the 2010's all over again. 
+#
+# Why: It all started by appleasing the GTK2 Python2 version of meld-1.8 
+# as i found the GTK3/4 version lacking in features, though things have 
+# gotten rather messy and i figured i might as well clean up , though my 
+# interests include the m68k Amiga, Ixemul (BSD emulation library) etc. 
+# knowing that the Debian m68k port is struggling to restructure i am 
+# pretty sure the ixemul library will never run python3(?) i have some 
+# plans down the line for some things i'd like to try for the Amiga/AROS 
+# m68k, thinks like the PIStorm project make things possible on the m68k 
+# that were well out of reach prior (see EMU68 (Wow, i just read, PPC 
+# support! \0/) by https://www.patreon.com/michal_schulz). And seeing 
+# that the Debian version of Python2 is well patched into 2023 with 
+# things like OpenSSL 3 support, the Debian patches makes this all well 
+# suited as a starting point.
+
 build cmd: 
 dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean
----
-Building python2 (deps/python/python2)
 
-should just work with build cmd:
+---
+Building python2 (python/python2)
+
+Should just work with build cmd:
 dpkg-buildpackage -us -ui -uc --no-sign --build=binary --no-post-clean; dpkg-buildpackage -us -uc -nc -us -ui --no-sign --build=binary -j5 --no-post-clean
 
----
-python-defaults-2.7.18 should be neutered now and not interfere with
-normal system operations. some files in there are required... 
-specifically python2.pm and a few others i grabbed from 'debian buster'
-last time i was messing with this, i might do that again....
+--- 
+'python-defaults-2.7.18' should be neutered now and not interfere with 
+normal system operations. Some files in there are required to continue 
+smootly ... Specifically python2.pm and a few others expected for 
+the build process to continue and using python2 if so specified.
 
-anyway, dh_python3 can be used in place of dh_python2 
+Anyway, dh_python3 can be used in place of dh_python2 
 	ln -s /usr/bin/dh_python3 /usr/bin/dh_python2
-	
----
-Building pygtk-2.24 (deps/pygtk-2.24/pygtk-2.24.0)
-buid cmd: dpkg-buildpackage -us -nc -us -ui -uc --no-sign --build=binary -j5 --no-pre-clean
+I guess I might just reuse dh_python3 or something next time I come 
+around.  
+--- 
 
- - needs 'pycairo-py2'. (deps/pycairo-py2) i manually installed this because:
-Can't exec "dh_python2": No such file or directory at /usr/share/perl5/Debian/Debhelper/SequencerUtil.pm line 534:
- so "cd pycairo-py2; python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install --prefix=/usr" - and remove python*-cairo as needed.
+Building pygtk-2.24 (pygtk/pygtk-2.24.0) buid cmd: 
+dpkg-buildpackage -us -nc -us -ui -uc --no-sign --build=binary -j5
 
-then we need python2-gobjects (deps/pygobject_0) that requires 'apt install docbook-xsl'
-now 'pygobjects_0' compiles but something i've done isnt adding up,
-the debian/rules changes or so, likewise seems to be the case for pygtk, 
+ - needs 'pycairo-py2'. (pycairo-py2):
+If dh_python2 isnt linked to dh_python3 you'll get an error.
+Otherwise it seems to compile and build a package normally
+though this is yet to be determined. 
+
+However, for installing manually:
+"cd pycairo-py2;
+'python2 setup.py config; python2 setup.py build; sudo -C python2 setup.py install --prefix=/usr'
+ - and remove python*-cairo as needed.
+
+Then we need 'python2-gobjects (pygobject_0)' this requires docbook-xsl 
+so 'apt install docbook-xsl'. Now, 'pygobjects_0' compiles but something 
+i've done Isn't adding up, likely me changing the package name from 
+python-* python2-* and a a mismatch somewhere in the debian/rules 
+changes and Makefile I suppose, likewise seems to be the case for pygtk, 
 all the libraries and all are well and alive in 
-deps/pygtk-2.24/pygtk-2.24.0/build-2.7 but not included in the package. 
-somehow even doing a manual 'make install' in that dir doesnt make the
-pygtk module work under python2. 
+pygtk/pygtk-2.24.0/build-2.7 but not included in the final (*.deb) 
+package. Somehow even doing a manual 'make install' doesnt make the 
+pygtk module work under python2.
 
-These are simply removed from deps:
-python*-cairo*
-python-cairo-dbg
+These are simply removed as deps:
+python*-cairo* 
+python-cairo-dbg 
 python-gobject-2-dbg
 
 needs
-libatk-bridge2.0-dev
-check-local must be removed from Makefile.in also in tests/ if it appears
+libatk-bridge2.0-dev (at-spi2-core)
+check-local must be removed from Makefile.in also in tests/ it appears
 ----
 
 gtksourceview2-2.10.5
-depends on: gobject-introspection
+depends on: 
+gobject-introspection libglib2.0-doc libgtk2.0-doc gnome-common gtk-doc-tools 
 
 Gentoo fixed building with gcc-14
 https://gitweb.gentoo.org/repo/gentoo.git/diff/?id=4f79cdcc9f9f1d131994a0764d0dc3e1d9a5fbad&id2=05481fab1748df6e85deb763b75843f52d96f7e9
@@ -59,11 +86,17 @@ include /usr/share/python/python.mk
 dpkg-buildpackage -us -uc -nc --no-post-clean 
 ---
 pycairo: 
- deps: needed python2.pm - so i hacked together a python2 version using the buster sources and edited the build rules and makefile
-edit 2025: i now pieced together python2-defaults. i had a strange feeling
-had done a lot of this work before... 
+ deps: needed python2.pm - so i apparently previously (a year or so ago) 
+hacked together a python2 version using the buster sources and edited 
+the build rules and makefile 
+edit 2025: I now pieced together python2-defaults.
+I had a strange feeling I had done this before...
+
 -- 
-My source.list file had these entries in 2024: 
+
+My source.list file had these entries in 2024 - usefull for grabbing 
+sources - but now I wouldn't install the binaries and risk my system 
+snowballing into hell...:
 
 #legacy
 deb [ allow-insecure=yes ] http://archive.debian.org/debian/ squeeze main contrib non-free
