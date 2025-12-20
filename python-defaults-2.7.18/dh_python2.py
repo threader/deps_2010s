@@ -1,4 +1,4 @@
-#! /usr/bin/python2s
+#! /usr/bin/python2
 
 from os.path import exists
 from subprocess import call
