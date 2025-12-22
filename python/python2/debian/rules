@@ -775,8 +775,8 @@ endif
 
 install: build-arch stamps/stamp-install
 stamps/stamp-install: stamps/stamp-build control-file stamps/stamp-control
-#	dh_testdir
-#	dh_testroot
+	dh_testdir
+	dh_testroot
 	dh_prep
 	dh_installdirs
 
@@ -1340,8 +1340,8 @@ binary-indep: build-indep install stamps/stamp-control
 
 # Build architecture-dependent files here.
 binary-arch: build-arch install
-#	dh_testdir -a
-#	dh_testroot -a
+	dh_testdir -a
+	dh_testroot -a
 #	dh_installdebconf -a
 	dh_installexamples -a
 	-dh_icons -a || dh_iconcache -a
@@ -1425,7 +1425,7 @@ $(patchdir)/series: $(patchdir)/series.in
 
 patch: stamps/stamp-patch
 stamps/stamp-patch: $(patchdir)/series
-#	dh_testdir
+	dh_testdir
 	uname -a
 	@echo USER=$$USER, LOGNAME=$$LOGNAME
 	QUILT_PATCHES=$(patchdir) quilt push -a || test $$? = 2
