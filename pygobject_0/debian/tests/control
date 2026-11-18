@@ -1,6 +1,6 @@
 Tests: build2
 Restrictions: allow-stderr, superficial
-Depends: build-essential, python2-gobject-2-dev, python2-dev
+Depends: build-essential, python2-gobject-2-dev, python2.7-dev
 
 Tests: python2
 Restrictions: allow-stderr, superficial

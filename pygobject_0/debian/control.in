@@ -10,7 +10,7 @@ Build-Depends: dbus (>= 1.8) <!nocheck>,
                gnome-pkg-tools (>= 0.10),
                libffi-dev (>= 3.0.5),
                libglib2.0-dev (>= 2.24.0),
-               python2-all-dev (>= 2.6.6-3~),
+               python2.7-dev (>= 2.6.6-3~),
                quilt,
                xauth <!nocheck>,
                xsltproc,
@@ -45,7 +45,7 @@ Package: python2-gobject-2-dev
 Architecture: all
 Depends: libffi-dev (>= 3.0.5),
          libglib2.0-dev (>= 2.24.0),
-         python2-dev,
+         python2.7-dev,
          python2-gobject-2 (>= ${source:Version}),
          ${misc:Depends},
          ${python:Depends}
